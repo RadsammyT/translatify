@@ -1,0 +1,23 @@
+[package]
+name = "translatify"
+version = "0.1.0"
+edition = "2021"
+authors = ["RadsammyT <radsammyt@gmail.com>"]
+license = "MIT"
+description = "A CLI \"\"\"tool\"\"\" that takes the input sentence(s) and translates it through many random languages, then translate it back to the original"
+repository = "https://github.com/Eveheeero/Eveheeero/tree/main/Jobs/Translator"
+
+[[bin]]
+name = "translate"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1.21.2", features = ["full"] }
+reqwest = "0.11"
+json = "0.12.4"
+log = "0.4.17"
+simplelog = "0.12.0"
+clap = { version = "4.0.18", features = ["derive"] }
+text_io = "0.1.12"
+rand = "0.8.5"
+google_translator = "*"
