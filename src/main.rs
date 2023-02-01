@@ -1,4 +1,4 @@
-use google_translator::{InputLang, OutputLang, translate};
+use google_translator::{InputLang, OutputLang, translate, translate_one_line, TranslateResult};
 use text_io::{self, read};
 use rand::{thread_rng, Rng};
 
@@ -142,9 +142,10 @@ static LANG: [(InputLang, OutputLang); 133] = [
 
 #[tokio::main]
 async fn main() {
-    println!("Running test case");
+    println!("API Check... Please wait");
+    translate_one_line("Text.".to_owned(), InputLang::Auto, OutputLang::Japanese).await.unwrap();
     print!("How many languages should the text be translated through? ");
-    let lang_count: u8 = {let mut t = read!(); t += 1; t};
+    let lang_count: u8 = read!();
 
     let mut lang_rand: Vec<u16> = vec![];
     for _ in 0..lang_count {
@@ -167,8 +168,8 @@ async fn main() {
     dbg!(&in_vec);
     // dbg!(&lang_rand);
 
-    in_vec =  doit(&in_vec, InputLang::Auto, LANG[lang_rand[0] as usize].1).await;
-
+    in_vec =  doit(&in_vec, InputLang::Auto, LANG[lang_rand[0] as usize].1).await.0;
+    println!("ITER 0 (AUTO -> {:?}): {:?}", LANG[lang_rand[0] as usize].1, in_vec);
     for i in 0..lang_rand.len()-1 {
         let mut temp = String::new();
         for i in in_vec.to_owned() {
@@ -182,23 +183,32 @@ async fn main() {
 
 
         //trans(input, langs[lang_rand[i]].0, LANG[lang_rand[i+1]].1)
-        in_vec =  doit(&in_vec, LANG[lang_rand[i] as usize].0, LANG[lang_rand[i+1] as usize].1).await;
-        println!("ITER {}: {:?}", i+1, in_vec);
+        let res = doit(&in_vec, LANG[lang_rand[i] as usize].0, LANG[lang_rand[i+1] as usize].1).await;
+        in_vec =  res.0;
+        println!("ITER {} ({:?} -> {:?}): {:?}", i+1, LANG[lang_rand[i] as usize].0, LANG[lang_rand[i+1] as usize].1, in_vec);
         // in_vec = temp;
     }
-    in_vec = doit(&in_vec, InputLang::Auto, OutputLang::English).await;
+    in_vec = doit(&in_vec, InputLang::Auto, OutputLang::English).await.0;
     print!("{:?}", in_vec);
 }
 
-async fn doit(input: &Vec<String>, inlang: InputLang, outlang: OutputLang) -> Vec<String> {
-    let res = translate(input.to_vec(), 
-                            inlang, 
-                            outlang).await.unwrap();
+// if I put all the contents of this function into main() then translation wouldnt work
+// because its still a future for whatever reason.
+// putting the translate function in a separate async function works though
+async fn doit(input: &Vec<String>, inlang: InputLang, outlang: OutputLang) -> (Vec<String>, TranslateResult) {
+    let res = translate
+    (
+        input.to_vec(), 
+        inlang, 
+        outlang
+    )
+        .await
+        .unwrap();
     // dbg!(&res.output_text);
     
     let mut ret: Vec<String> = vec![];
     for i in 0..res.output_text.len() {
         ret.push(res.output_text[i][0].to_owned());
     }
-    return ret.to_owned();
+    return (ret.to_owned(), res);
 }
