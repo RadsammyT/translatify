@@ -142,7 +142,11 @@ static LANG: [(InputLang, OutputLang); 133] = [
     (InputLang::Hindi,             OutputLang::Hindi),
 
 ];
-
+/// If any string has any of these punctuation characters then the API will trim
+/// from the end of the string to where the first punctuation character occurs.
+/// 
+/// Any occurence of any one of these characters will the pattern for splitting
+/// into a Vec<String>
 const PUNCTUATION: [char; 5] = ['.','。',';','|', '!'];
 
 #[tokio::main]
