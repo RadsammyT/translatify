@@ -1,6 +1,9 @@
 use google_translator::{InputLang, OutputLang, translate, translate_one_line, TranslateResult};
 use text_io::{self, read};
 use rand::{thread_rng, Rng};
+use console::{Term, style};
+use tokio::time::{sleep, Duration};
+// use std::process::Command;
 
 //mfw I have to update its length every time I update
 static LANG: [(InputLang, OutputLang); 133] = [
@@ -140,8 +143,19 @@ static LANG: [(InputLang, OutputLang); 133] = [
 
 ];
 
+const PUNCTUATION: [char; 5] = ['.','。',';','|', '!'];
+
 #[tokio::main]
 async fn main() {
+    let term = Term::stdout();
+    term.clear_screen().expect("Uh oh");
+    print!("{} \nby RadsammyT\n", 
+        style("Translatify")
+            .bold()
+            .blue()
+            .underlined()
+        );
+
     println!("API Check... Please wait");
     translate_one_line("Text.".to_owned(), InputLang::Auto, OutputLang::Japanese).await.unwrap();
     print!("How many languages should the text be translated through? ");
@@ -159,7 +173,7 @@ async fn main() {
     }
     
     // let temp_1 = input.to_string().split('.');
-    let temp: Vec<&str> = input.split('.').collect();
+    let temp: Vec<&str> = input.split(&PUNCTUATION[..]).collect();
     let mut in_vec: Vec<String> = vec![];
     for i in temp {
         in_vec.push(i.to_string());
@@ -175,7 +189,7 @@ async fn main() {
         for i in in_vec.to_owned() {
             temp.push_str(i.as_str());
         }
-        let split = temp.split(&['.','。',';'][..]).collect::<Vec<&str>>();
+        let split = temp.split(&PUNCTUATION[..]).collect::<Vec<&str>>();
         in_vec.clear();
         for i in split {
             in_vec.push(i.to_owned());
@@ -189,7 +203,12 @@ async fn main() {
         // in_vec = temp;
     }
     in_vec = doit(&in_vec, InputLang::Auto, OutputLang::English).await.0;
-    print!("{:?}", in_vec);
+    println!("{:?}", in_vec);
+
+    // print!("3 second timeout");
+    // sleep(Duration::from_millis(3000)).await;
+    // print!("Type anything and press enter");
+    // let _: String = read!();
 }
 
 // if I put all the contents of this function into main() then translation wouldnt work

@@ -12,7 +12,7 @@ name = "translate"
 path = "src/main.rs"
 
 [dependencies]
-tokio = { version = "1.21.2", features = ["full"] }
+tokio = { version = "1.21.2", features = ["full", "time"] }
 reqwest = "0.11"
 json = "0.12.4"
 log = "0.4.17"
@@ -20,4 +20,5 @@ simplelog = "0.12.0"
 clap = { version = "4.0.18", features = ["derive"] }
 text_io = "0.1.12"
 rand = "0.8.5"
-google_translator = "*"
+google_translator = "0.2.2"
+console = "*"
