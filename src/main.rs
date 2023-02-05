@@ -1,10 +1,8 @@
-use google_translator::{InputLang, OutputLang, translate, translate_one_line, TranslateResult};
-use text_io::{self, read};
+use google_translator::{InputLang, OutputLang, translate, TranslateResult};
 use rand::{thread_rng, Rng};
-use console::{Term, style};
-use tokio::time::{sleep, Duration};
+use console::style;
 // use std::process::Command;
-
+use std::env;
 //mfw I have to update its length every time I update
 static LANG: [(InputLang, OutputLang); 133] = [
     (InputLang::Galego,            OutputLang::Galego),
@@ -151,26 +149,52 @@ const PUNCTUATION: [char; 5] = ['.','。',';','|', '!'];
 
 #[tokio::main]
 async fn main() {
-    let term = Term::stdout();
-    term.clear_screen().expect("Uh oh");
+    let args: Vec<String> = env::args().collect();
+    
+    // if args.is_empty() {
+        
+        // } else {
+            
+            // }
+            
+    // let term = Term::stdout();
+    // term.clear_screen().expect("Uh oh");
     print!("{} \nby RadsammyT\n", 
         style("Translatify")
             .bold()
             .blue()
             .underlined()
+    );
+
+    
+    let lang_count: u8;
+    let mut input: String = String::new();
+    if args.len() != 3 {
+        println!("{}", style(
+            format!("Invalid Argument Size. expected 2, got {}", args.len())
+        )
+        .red()
+        .underlined()
         );
 
-    println!("API Check... Please wait");
-    translate_one_line("Text.".to_owned(), InputLang::Auto, OutputLang::Japanese).await.unwrap();
-    print!("How many languages should the text be translated through? ");
-    let lang_count: u8 = read!();
+        println!("Args readout:");
+        for i in args {
+            println!("({i})");
+        }
 
+        panic!();
+    } else {
+        lang_count = args[1].as_str().parse().unwrap();
+        input = args[2].to_owned();
+    }
+
+
+    println!("API Check... Please wait");
     let mut lang_rand: Vec<u16> = vec![];
     for _ in 0..lang_count {
         lang_rand.push(thread_rng().gen_range(0..LANG.len()) as u16);
     }
-    print!("Input message: ");
-    let mut input: String = read!("\n{}\n");
+
     // because windows puts a \r on entering the string.
     if cfg!(windows) {
         input = input.trim_end_matches("\r").to_string();
@@ -207,12 +231,7 @@ async fn main() {
         // in_vec = temp;
     }
     in_vec = doit(&in_vec, InputLang::Auto, OutputLang::English).await.0;
-    println!("{:?}", in_vec);
-
-    // print!("3 second timeout");
-    // sleep(Duration::from_millis(3000)).await;
-    // print!("Type anything and press enter");
-    // let _: String = read!();
+    println!("Final: {:?}", in_vec);
 }
 
 // if I put all the contents of this function into main() then translation wouldnt work

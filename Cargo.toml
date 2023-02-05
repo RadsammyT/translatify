@@ -8,7 +8,7 @@ description = "A CLI \"\"\"tool\"\"\" that takes the input sentence(s) and trans
 repository = "https://github.com/Eveheeero/Eveheeero/tree/main/Jobs/Translator"
 
 [[bin]]
-name = "translate"
+name = "translatify"
 path = "src/main.rs"
 
 [dependencies]

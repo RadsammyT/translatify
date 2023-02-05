@@ -5,5 +5,11 @@ A thing written in rust that translates a sentence into a chain of various (not 
 - [Eveheeero](https://github.com/Eveheeero) for the Google Translate API
 
 ## Setup
- - Clone this repository
- - `cargo run`
+ - Clone this repository, `git clone https://github.com/RadsammyT/translatify`
+ - `cargo build`
+
+
+## Arguments
+ - `translatify.exe (number of languages) "(Translated string)"`
+
+    Unsure if this works on a linux terminal
