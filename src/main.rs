@@ -1,164 +1,28 @@
+pub mod langs;
+
 use google_translator::{InputLang, OutputLang, translate, TranslateResult};
 use rand::{thread_rng, Rng};
 use console::style;
 // use std::process::Command;
 use std::env;
+use langs::LANG;
+// use core::num::ParseIntError;
 //mfw I have to update its length every time I update
-static LANG: [(InputLang, OutputLang); 133] = [
-    (InputLang::Galego,            OutputLang::Galego),
-    (InputLang::Guarani,       OutputLang::Guarani),
-    (InputLang::Gujarati,      OutputLang::Gujarati),
-    (InputLang::Greek,         OutputLang::Greek),
-    (InputLang::Dutch,         OutputLang::Dutch),
-    (InputLang::Nepali,        OutputLang::Nepali),
-    (InputLang::Norwegian,     OutputLang::Norwegian),
-    (InputLang::Danish,        OutputLang::Danish),
-    (InputLang::Dogri,         OutputLang::Dogri),
-    (InputLang::German,        OutputLang::German),
-    (InputLang::Dhivehi,       OutputLang::Dhivehi),
-    (InputLang::Lao,           OutputLang::Lao),
-    (InputLang::Latvian,       OutputLang::Latvian),
-    (InputLang::Latin,         OutputLang::Latin),
-    (InputLang::Russian,       OutputLang::Russian),
-    (InputLang::Luganda,       OutputLang::Luganda),
-    (InputLang::Romanian,      OutputLang::Romanian),
-    (InputLang::Luxembourgish, OutputLang::Luxembourgish), 
-    (InputLang::Lithuanian,    OutputLang::Lithuanian),
-    (InputLang::Lingala,       OutputLang::Lingala),
-    (InputLang::Marathi,       OutputLang::Marathi),
-    (InputLang::Maori,         OutputLang::Maori),
-    (InputLang::Maithili,      OutputLang::Maithili),
-    (InputLang::Macedonian,    OutputLang::Macedonian),
-    (InputLang::Malagasy,      OutputLang::Malagasy),
-    (InputLang::Malayalam,     OutputLang::Malayalam),
-    (InputLang::Malay,         OutputLang::Malay),
-    (InputLang::Meithei,       OutputLang::Meithei),
-    (InputLang::Malti,         OutputLang::Malti),
-    (InputLang::Mongolian,     OutputLang::Mongolian),
-    (InputLang::Hmong,         OutputLang::Hmong),
-    (InputLang::Burmese,       OutputLang::Burmese),
-    (InputLang::Mizo,          OutputLang::Mizo),
-    (InputLang::Basque,        OutputLang::Basque),
-    (InputLang::Bambara,       OutputLang::Bambara),
-    (InputLang::Vietnamese,    OutputLang::Vietnamese),
-    (InputLang::Belarusian,    OutputLang::Belarusian),
-    (InputLang::Bengali,       OutputLang::Bengali),
-    (InputLang::Bosnian,       OutputLang::Bosnian),
-    (InputLang::Bhojpuri,      OutputLang::Bhojpuri),
-    (InputLang::NSotho,        OutputLang::NSotho),
-    (InputLang::Bulgarian,     OutputLang::Bulgarian),
-    (InputLang::Samoan,        OutputLang::Samoan),
-    (InputLang::Sanskrit,      OutputLang::Sanskrit),
-    (InputLang::Serbian,       OutputLang::Serbian),
-    (InputLang::Cebuano,       OutputLang::Cebuano),
-    (InputLang::Sotho,         OutputLang::Sotho),
-    (InputLang::Somali,        OutputLang::Somali),
-    (InputLang::Shona,         OutputLang::Shona),
-    (InputLang::Sundanese,     OutputLang::Sundanese),
-    (InputLang::Swahili,       OutputLang::Swahili),
-    (InputLang::Swedish,       OutputLang::Swedish),
-    (InputLang::ScottishGaelic,OutputLang::ScottishGaelic),
-    (InputLang::Spanish,       OutputLang::Spanish),
-    (InputLang::Slovak,        OutputLang::Slovak),
-    (InputLang::Slovene,       OutputLang::Slovene),
-    (InputLang::Sindhi,        OutputLang::Sindhi),
-    (InputLang::Sinhala,       OutputLang::Sinhala),
-    (InputLang::Arabic,        OutputLang::Arabic),
-    (InputLang::Armenian,      OutputLang::Armenian),
-    (InputLang::Assamese,      OutputLang::Assamese),
-    (InputLang::Aymara,        OutputLang::Aymara),
-    (InputLang::Icelandic,     OutputLang::Icelandic),
-    (InputLang::HaitianCreole, OutputLang::HaitianCreole),
-    (InputLang::Irish,         OutputLang::Irish),
-    (InputLang::Azerbaijani,   OutputLang::Azerbaijani),
-    (InputLang::Afrikaans,     OutputLang::Afrikaans),
-    (InputLang::Albanian,      OutputLang::Albanian),
-    (InputLang::Amharic,       OutputLang::Amharic),
-    (InputLang::Estonian,      OutputLang::Estonian),
-    (InputLang::Esperanto,     OutputLang::Esperanto),
-    (InputLang::Ewe,           OutputLang::Ewe),
-    (InputLang::English,       OutputLang::English),
-    (InputLang::Oromo,         OutputLang::Oromo),
-    (InputLang::Odia,          OutputLang::Odia),
-    (InputLang::Yoruba,        OutputLang::Yoruba),
-    (InputLang::Urdu,          OutputLang::Urdu),
-    (InputLang::Uzbek,         OutputLang::Uzbek),
-    (InputLang::Ukrainian,     OutputLang::Ukrainian),
-    (InputLang::Welsh,         OutputLang::Welsh),
-    (InputLang::Uyghur,        OutputLang::Uyghur),
-    (InputLang::Igbo,          OutputLang::Igbo),
-    (InputLang::Yiddish,       OutputLang::Yiddish),
-    (InputLang::Italian,       OutputLang::Italian),
-    (InputLang::Indonesian,    OutputLang::Indonesian),
-    (InputLang::Ilocano,       OutputLang::Ilocano),
-    (InputLang::Japanese,      OutputLang::Japanese),
-    (InputLang::Javanese,      OutputLang::Javanese),
-    (InputLang::Georgian,      OutputLang::Georgian),
-    (InputLang::Zulu,          OutputLang::Zulu),
-    (InputLang::SimplifiedChinese, OutputLang::SimplifiedChinese),
-    (InputLang::TraditionalChinese,OutputLang::TraditionalChinese) ,
-    (InputLang::Chewa,          OutputLang::Chewa),
-    (InputLang::Czech,          OutputLang::Czech),
-    (InputLang::Tsonga,         OutputLang::Tsonga),
-    (InputLang::Kazakh,         OutputLang::Kazakh),
-    (InputLang::Catalan,        OutputLang::Catalan),
-    (InputLang::Kannada,        OutputLang::Kannada),
-    (InputLang::Quechuan,       OutputLang::Quechuan),
-    (InputLang::Corsican,       OutputLang::Corsican),
-    (InputLang::Xhosa,          OutputLang::Xhosa),
-    (InputLang::Konkani,        OutputLang::Konkani),
-    (InputLang::Sorani,         OutputLang::Sorani),
-    (InputLang::Kurmanji,       OutputLang::Kurmanji),
-    (InputLang::Croatian,       OutputLang::Croatian),
-    (InputLang::Krio,           OutputLang::Krio),
-    (InputLang::Khmer,          OutputLang::Khmer),
-    (InputLang::Kinyarwanda,    OutputLang::Kinyarwanda),
-    (InputLang::Kyrgyz,         OutputLang::Kyrgyz),
-    (InputLang::Tamil,          OutputLang::Tamil),
-    (InputLang::Tajik,          OutputLang::Tajik),
-    (InputLang::Tatar,          OutputLang::Tatar),
-    (InputLang::Thai,           OutputLang::Thai),
-    (InputLang::Turkish,        OutputLang::Turkish),
-    (InputLang::Telugu,         OutputLang::Telugu),
-    (InputLang::Turkmen,        OutputLang::Turkmen),
-    (InputLang::Akan,           OutputLang::Akan),
-    (InputLang::Tigrinya,       OutputLang::Tigrinya),
-    (InputLang::Pashto,         OutputLang::Pashto),
-    (InputLang::Punjabi,        OutputLang::Punjabi),
-    (InputLang::Persian,        OutputLang::Persian),
-    (InputLang::Portuguese,     OutputLang::Portuguese),
-    (InputLang::Polish,         OutputLang::Polish),
-    (InputLang::French,         OutputLang::French),
-    (InputLang::Frisian,        OutputLang::Frisian),
-    (InputLang::Finnish,        OutputLang::Finnish),
-    (InputLang::Filipino,       OutputLang::Filipino),
-    (InputLang::Hawaiian,       OutputLang::Hawaiian),
-    (InputLang::Hausa,          OutputLang::Hausa),
-    (InputLang::Korean,         OutputLang::Korean),
-    (InputLang::Hungarian,      OutputLang::Hungarian),
-    (InputLang::Hebrew,            OutputLang::Hebrew),
-    (InputLang::Hindi,             OutputLang::Hindi),
 
-];
-/// If any string has any of these punctuation characters then the API will trim
+/// If any string has any of these punctuation characters then the API (Not Eveheeero's fault, blame googles undocumented API) will trim
 /// from the end of the string to where the first punctuation character occurs.
 /// 
-/// Any occurence of any one of these characters will the pattern for splitting
+/// Any occurence of any one of these characters will be the pattern for splitting
 /// into a Vec<String>
-const PUNCTUATION: [char; 5] = ['.','。',';','|', '!'];
+/// 
+/// Google translate will take ANY punctuation mark of ANY language and have it cut off there.
+/// Additional work may be required to add all known punctuation marks into this array
+/// 
+const PUNCTUATION: [char; 7] = ['.','。',';','|', '!', '?' ,'।'];
 
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = env::args().collect();
-    
-    // if args.is_empty() {
-        
-        // } else {
-            
-            // }
-            
-    // let term = Term::stdout();
-    // term.clear_screen().expect("Uh oh");
     print!("{} \nby RadsammyT\n", 
         style("Translatify")
             .bold()
@@ -168,23 +32,33 @@ async fn main() {
 
     
     let lang_count: u8;
+    #[allow(unused_assignments)]
     let mut input: String = String::new();
     if args.len() != 3 {
-        println!("{}", style(
-            format!("Invalid Argument Size. expected 2, got {}", args.len())
-        )
-        .red()
-        .underlined()
-        );
-
-        println!("Args readout:");
-        for i in args {
-            println!("({i})");
+        
+        if args[1] == "help" {
+            println!("Arguments: \n(number of languages) \"(input string)\"");
+        } else {
+            println!("{}", style(
+                format!("Invalid Argument Size. expected 3, got {}", args.len())
+            )
+            .red()
+            .underlined()
+            );
+    
+            println!("Args readout:");
+            for i in args {
+                println!("({i})");
+            }
         }
 
-        panic!();
+
+        std::process::exit(0);
     } else {
-        lang_count = args[1].as_str().parse().unwrap();
+        lang_count = args[1].as_str().parse().unwrap_or_else(|e| {
+            println!("Invalid number. {e}");
+            panic!("{e}");
+        });
         input = args[2].to_owned();
     }
 
@@ -210,7 +84,7 @@ async fn main() {
     dbg!(&in_vec);
     // dbg!(&lang_rand);
 
-    in_vec =  doit(&in_vec, InputLang::Auto, LANG[lang_rand[0] as usize].1).await.0;
+    in_vec = doit(&in_vec, InputLang::Auto, LANG[lang_rand[0] as usize].1).await.0;
     println!("ITER 0 (AUTO -> {:?}): {:?}", LANG[lang_rand[0] as usize].1, in_vec);
     for i in 0..lang_rand.len()-1 {
         let mut temp = String::new();

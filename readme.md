@@ -12,4 +12,3 @@ A thing written in rust that translates a sentence into a chain of various (not 
 ## Arguments
  - `translatify.exe (number of languages) "(Translated string)"`
 
-    Unsure if this works on a linux terminal
