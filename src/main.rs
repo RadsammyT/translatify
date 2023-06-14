@@ -34,24 +34,35 @@ async fn main() {
     let lang_count: u8;
     #[allow(unused_assignments)]
     let mut input: String = String::new();
-    if args.len() != 3 {
-        
-        if args[1] == "help" {
-            println!("Arguments: \n(number of languages) \"(input string)\"");
-        } else {
-            println!("{}", style(
-                format!("Invalid Argument Size. expected 3, got {}", args.len())
-            )
-            .red()
-            .underlined()
-            );
-    
-            println!("Args readout:");
-            for i in args {
-                println!("({i})");
-            }
-        }
+    if args.len() != 3 {      
+        if args.len() != 1 {    
+            match args[1].as_str() {
 
+                "help" => {
+                    println!("Arguments: \n(number of languages) \"(input string)\"");
+                }
+
+                "test" => {
+                    doit(&vec!["Test message".to_owned()], InputLang::Auto, OutputLang::Japanese).await;
+                }
+
+                _ => {
+                    println!("{}", style(
+                        format!("Invalid Argument Size. expected 3, got {}", args.len())
+                    )
+                    .red()
+                    .underlined()
+                    );
+                
+                    println!("Args readout:");
+                    for i in args {
+                        println!("({i})");
+                    }
+                }
+            }
+        } else {
+            println!("Arguments: \n(number of languages) \"(input string)\"");
+        }
 
         std::process::exit(0);
     } else {
@@ -62,8 +73,6 @@ async fn main() {
         input = args[2].to_owned();
     }
 
-
-    println!("API Check... Please wait");
     let mut lang_rand: Vec<u16> = vec![];
     for _ in 0..lang_count {
         lang_rand.push(thread_rng().gen_range(0..LANG.len()) as u16);
@@ -96,7 +105,6 @@ async fn main() {
         for i in split {
             in_vec.push(i.to_owned());
         }
-
 
         //trans(input, langs[lang_rand[i]].0, LANG[lang_rand[i+1]].1)
         let res = doit(&in_vec, LANG[lang_rand[i] as usize].0, LANG[lang_rand[i+1] as usize].1).await;
