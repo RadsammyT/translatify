@@ -10,7 +10,7 @@ use langs::LANG;
 //mfw I have to update its length every time I update
 
 /// If any string has any of these punctuation characters then the API (Not Eveheeero's fault, blame googles undocumented API) will trim
-/// from the end of the string to where the first punctuation character occurs.
+/// from the start of the string to where the first punctuation character occurs.
 /// 
 /// Any occurence of any one of these characters will be the pattern for splitting
 /// into a Vec<String>
