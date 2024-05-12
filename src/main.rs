@@ -29,7 +29,6 @@ async fn main() {
             .blue()
             .underlined()
     );
-
     
     let lang_count: u8;
     #[allow(unused_assignments)]
@@ -43,7 +42,7 @@ async fn main() {
                 }
 
                 "test" => {
-                    doit(&vec!["Test message".to_owned()], InputLang::Auto, OutputLang::Japanese).await;
+                    doit(&["Test message".to_owned()], InputLang::Auto, OutputLang::Japanese).await;
                 }
 
                 _ => {
@@ -70,7 +69,7 @@ async fn main() {
             println!("Invalid number. {e}");
             panic!("{e}");
         });
-        input = args[2].to_owned();
+        args[2].clone_into(&mut input);
     }
 
     let mut lang_rand: Vec<u16> = vec![];
@@ -80,7 +79,7 @@ async fn main() {
 
     // because windows puts a \r on entering the string.
     if cfg!(windows) {
-        input = input.trim_end_matches("\r").to_string();
+        input = input.trim_end_matches('\r').to_string();
     }
     
     // let temp_1 = input.to_string().split('.');
@@ -97,7 +96,7 @@ async fn main() {
     println!("ITER 0 (AUTO -> {:?}): {:?}", LANG[lang_rand[0] as usize].1, in_vec);
     for i in 0..lang_rand.len()-1 {
         let mut temp = String::new();
-        for i in in_vec.to_owned() {
+        for i in &in_vec {
             temp.push_str(i.as_str());
         }
         let split = temp.split(&PUNCTUATION[..]).collect::<Vec<&str>>();
@@ -116,10 +115,10 @@ async fn main() {
     println!("Final: {:?}", in_vec);
 }
 
-// if I put all the contents of this function into main() then translation wouldnt work
-// because its still a future for whatever reason.
-// putting the translate function in a separate async function works though
-async fn doit(input: &Vec<String>, inlang: InputLang, outlang: OutputLang) -> (Vec<String>, TranslateResult) {
+/// if I put all the contents of this function into main() then translation wouldnt work
+/// because its still a future for whatever reason.
+/// putting the translate function in a separate async function works though
+async fn doit(input: &[String], inlang: InputLang, outlang: OutputLang) -> (Vec<String>, TranslateResult) {
     let res = translate
     (
         input.to_vec(), 
@@ -134,5 +133,5 @@ async fn doit(input: &Vec<String>, inlang: InputLang, outlang: OutputLang) -> (V
     for i in 0..res.output_text.len() {
         ret.push(res.output_text[i][0].to_owned());
     }
-    return (ret.to_owned(), res);
+    (ret.to_owned(), res)
 }
