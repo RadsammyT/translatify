@@ -18,7 +18,7 @@ use langs::LANG;
 /// Google translate will take ANY punctuation mark of ANY language and have it cut off there.
 /// Additional work may be required to add all known punctuation marks into this array
 /// 
-const PUNCTUATION: [char; 7] = ['.','。',';','|', '!', '?' ,'।'];
+const PUNCTUATION: [char; 8] = ['.','。',';','|', '!', '?' ,'।', '\n'];
 
 #[tokio::main]
 async fn main() {
@@ -86,7 +86,9 @@ async fn main() {
     let temp: Vec<&str> = input.split(&PUNCTUATION[..]).collect();
     let mut in_vec: Vec<String> = vec![];
     for i in temp {
-        in_vec.push(i.to_string());
+        if !i.is_empty() {
+            in_vec.push(i.to_string());
+        }
     }
     
     dbg!(&in_vec);
@@ -104,7 +106,6 @@ async fn main() {
         for i in split {
             in_vec.push(i.to_owned());
         }
-
         //trans(input, langs[lang_rand[i]].0, LANG[lang_rand[i+1]].1)
         let res = doit(&in_vec, LANG[lang_rand[i] as usize].0, LANG[lang_rand[i+1] as usize].1).await;
         in_vec =  res.0;
@@ -126,7 +127,10 @@ async fn doit(input: &[String], inlang: InputLang, outlang: OutputLang) -> (Vec<
         outlang
     )
         .await
-        .unwrap();
+        .unwrap_or_else(|x| {
+            println!("ERR: {}, input {:?} and output {:?}", x, inlang, outlang);
+            TranslateResult::default()
+        });
     // dbg!(&res.output_text);
     
     let mut ret: Vec<String> = vec![];
